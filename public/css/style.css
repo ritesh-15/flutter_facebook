@@ -1,0 +1,84 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-size: 1rem;
+    font-weight: normal;
+    font-family: 'Open Sans', sans-serif;
+}
+
+.container {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: hsl(0, 0%, 95%);
+}
+
+.card {
+    background-color: #ffffff;
+    padding: 1em;
+    border-radius: 0.3em;
+    box-shadow: 5px 5px 50px 50px #ededed;
+    width: 100%;
+    max-width: 450px;
+}
+
+.form{
+    margin-top: 2rem;
+}
+
+.heading {
+    font-size: 2rem;
+    color: rgb(44, 118, 255);
+    font-weight: bold;
+    text-align: center;
+}
+
+.form__controll{
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 2rem;
+}
+
+
+.form__controll label{
+    font-size: 0.9rem;
+    margin-bottom: 0.5em;
+}
+
+.form__controll input {
+    padding: 1em;
+    outline: none;
+    border-radius: 0.25em;
+    border: 1px solid black;
+    font-size: 1rem;
+}
+
+.button {
+    background-color: rgb(44, 118, 255);
+    width: 100%;
+    padding: 1em;
+    color: #ffffff;
+    border: none;
+    font-family: inherit;
+    border-radius: 0.25em;
+    cursor: pointer;
+}
+
+.invalide h1{
+    font-size: 1.5rem;
+    text-align: center;
+}
+
+.error{
+    padding: 0.75em 1em;
+    border:1px solid rgb(255, 62, 62);
+    margin-top: 2em;
+    border-radius: 0.25em;
+}
+
+.error p{
+    color: rgb(255, 62, 62);
+}
