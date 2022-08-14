@@ -29,15 +29,20 @@ class BaseController extends GetxController {
 
     if (!isFound) return;
 
+    loading = true;
+
     final result = await AuthService.refresh();
 
     if (result is RefreshResponse) {
+      loading = false;
       await TokenService.storeTokens(result.accessToken!, result.refreshToken!);
       user = result.user!;
       return;
     }
 
     await TokenService.clearTokens();
+
+    loading = false;
 
     await Get.offNamedUntil(NavigationRouter.loginRoute, (route) => false);
   }
