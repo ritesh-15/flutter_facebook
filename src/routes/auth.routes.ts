@@ -1,6 +1,12 @@
 import { Router } from "express";
 import { checkSchema } from "express-validator";
-import authLimiter from "../config/authLimiter";
+import {
+  forgotPasswordLimiter,
+  resendOtpLimiter,
+  signUpLimiter,
+  singInLimiter,
+  verifyOtpLimiter,
+} from "../config/authLimiter";
 import {
   forgotPassword,
   logout,
@@ -25,7 +31,7 @@ const authRouter = Router();
 
 authRouter.post(
   "/signup",
-  authLimiter,
+  signUpLimiter,
   checkSchema(signupSchema),
   validateRequestBody,
   signUp
@@ -33,7 +39,7 @@ authRouter.post(
 
 authRouter.post(
   "/signin",
-  authLimiter,
+  singInLimiter,
   checkSchema(signInSchema),
   validateRequestBody,
   signIn
@@ -41,7 +47,7 @@ authRouter.post(
 
 authRouter.post(
   "/verifyOtp",
-  authLimiter,
+  verifyOtpLimiter,
   checkSchema(verifyOtpSchema),
   validateRequestBody,
   verifyOtp
@@ -49,7 +55,7 @@ authRouter.post(
 
 authRouter.post(
   "/resendOtp",
-  authLimiter,
+  resendOtpLimiter,
   checkSchema(resendOtpSchema),
   validateRequestBody,
   resendOtp
@@ -66,6 +72,7 @@ authRouter.delete("/logout", authenticate, logout);
 
 authRouter.post(
   "/forgot-password",
+  forgotPasswordLimiter,
   checkSchema(forgotPasswordSchema),
   validateRequestBody,
   forgotPassword

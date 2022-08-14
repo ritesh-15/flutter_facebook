@@ -13,6 +13,10 @@ class CreateHttpError {
     return new CreateHttpError(400, message, "Bad request!");
   }
 
+  static toManyRequest(message: string = "Too many request!") {
+    return new CreateHttpError(429, message, "Too many request!");
+  }
+
   static unauthorized(message: string = "Unauthorized!") {
     return new CreateHttpError(401, message, "Unauthorized!");
   }
