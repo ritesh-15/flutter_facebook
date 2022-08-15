@@ -3,11 +3,12 @@ import CreateHttpError from "../utils/CreateHttpError";
 import bcrypt from "bcrypt";
 import OtpService from "../services/otp.service";
 import UserService from "../services/user.service";
-import JwtHelper from "../helpers/JwtHelper";
+import JwtHelper, { JwtPayloadCustom } from "../helpers/JwtHelper";
 import getTokenFromRequest from "../utils/getTokenFromRequest";
 import { MailOptions, sendEmail } from "../services/email.service";
 import { APP_BASE_URL } from "../constants/secrets";
 import forgotPasswordTemplate from "../utils/forgotPasswordTemplate";
+import SessionService from "../services/session.service";
 
 interface SignupInterface {
   email: string;
@@ -89,10 +90,13 @@ export const signIn = async (
         CreateHttpError.badRequest("Invalid email address or password!")
       );
 
-    const { accessToken, refreshToken } = JwtHelper.generateTokens(user.id!);
-    await JwtHelper.storeInCache(user.id!, refreshToken);
-    JwtHelper.setInCookie(res, "accessToken", accessToken);
-    JwtHelper.setInCookie(res, "refreshToken", refreshToken);
+    const jwtHelper = new JwtHelper();
+
+    const { accessToken, refreshToken } = jwtHelper.generateTokens(user.id!);
+    jwtHelper.setInCookie(res, "accessToken", accessToken);
+    jwtHelper.setInCookie(res, "refreshToken", refreshToken);
+
+    await jwtHelper.createSession({ token: refreshToken, userId: user.id! });
 
     res.json({
       ok: true,
@@ -149,10 +153,13 @@ export const verifyOtp = async (
 
     user = await UserService.update({ id: user.id! }, { isVerified: true });
 
-    const { accessToken, refreshToken } = JwtHelper.generateTokens(user?.id!);
-    await JwtHelper.storeInCache(user?.id!, refreshToken);
-    JwtHelper.setInCookie(res, "accessToken", accessToken);
-    JwtHelper.setInCookie(res, "refreshToken", refreshToken);
+    const jwtHelper = new JwtHelper();
+    const { accessToken, refreshToken } = jwtHelper.generateTokens(user?.id!);
+
+    jwtHelper.setInCookie(res, "accessToken", accessToken);
+    jwtHelper.setInCookie(res, "refreshToken", refreshToken);
+
+    await jwtHelper.createSession({ token: refreshToken, userId: user?.id! });
 
     res.json({
       ok: true,
@@ -213,12 +220,16 @@ export const refresh = async (
   res: Response,
   next: NextFunction
 ) => {
-  const receivedRefreshToken = getTokenFromRequest(req, "refreshToken");
+  const receivedRefreshToken = getTokenFromRequest(
+    req,
+    "refreshToken",
+    "refreshToken"
+  );
 
   if (!receivedRefreshToken)
-    return next(CreateHttpError.notFound("Token not found!"));
+    return next(CreateHttpError.unauthorized("Token not found!"));
 
-  let jwtPayload = null;
+  let jwtPayload: JwtPayloadCustom | null = null;
 
   try {
     jwtPayload = JwtHelper.validateRefreshToken(receivedRefreshToken);
@@ -226,34 +237,47 @@ export const refresh = async (
     return next(CreateHttpError.unauthorized("Token expired!"));
   }
 
+  // find the session by refresh token
   try {
-    const session = await JwtHelper.getFromCache(jwtPayload.id);
+    const foundSession = await SessionService.findSession({
+      token: receivedRefreshToken,
+    });
 
-    if (!session) return next(CreateHttpError.unauthorized("Invalid session"));
+    //?? Token reuse case
 
-    if (session !== receivedRefreshToken)
-      return next(CreateHttpError.unauthorized("Invalid session"));
+    if (!foundSession) {
+      res.clearCookie("accessToken");
+      res.clearCookie("refreshToken");
+
+      await SessionService.deleteAllSessions(jwtPayload.id);
+
+      return next(CreateHttpError.unauthorized("Forbidden access!"));
+    }
 
     const user = await UserService.findUnique({ id: jwtPayload.id });
 
-    if (!user) return next(CreateHttpError.unauthorized("Invalid session"));
+    if (!user) return next(CreateHttpError.notFound("User not found!"));
 
-    const { accessToken, refreshToken } = JwtHelper.generateTokens(
+    const jwtHelper = new JwtHelper();
+    const { accessToken, refreshToken } = jwtHelper.generateTokens(
       jwtPayload.id
     );
-    await JwtHelper.storeInCache(jwtPayload.id, refreshToken);
-    JwtHelper.setInCookie(res, "accessToken", accessToken);
-    JwtHelper.setInCookie(res, "refreshToken", refreshToken);
 
-    res.json({
+    await jwtHelper.createSession({ token: refreshToken, userId: user.id });
+
+    jwtHelper.setInCookie(res, "accessToken", accessToken);
+    jwtHelper.setInCookie(res, "refreshToken", refreshToken);
+
+    await SessionService.deleteSession({ id: foundSession.id });
+
+    return res.json({
       ok: true,
-      message: "Token refreshed successfully",
-      user,
+      message: "Tokens refresh successfully!",
       accessToken,
-      refreshToken,
+      refresh,
     });
   } catch (error) {
-    next(CreateHttpError.internalServerError());
+    return next(CreateHttpError.internalServerError());
   }
 };
 
@@ -266,7 +290,8 @@ export const logout = async (
   next: NextFunction
 ) => {
   try {
-    await JwtHelper.removeFromCache(req.user?.id!);
+    await SessionService.deleteAllSessions(req.user?.id!);
+
     res.clearCookie("accessToken");
     res.clearCookie("refreshToken");
 
@@ -283,9 +308,9 @@ interface ForgotPasswordInterface {
   email: string;
 }
 
-// @route   DELETE api/auth/logout
-// @desc    Log out user
-// @access  Private
+// @route   POST api/auth/forgot-password
+// @desc    Forgot password
+// @access  Public
 export const forgotPassword = async (
   req: Request,
   res: Response,
@@ -333,6 +358,9 @@ export const forgotPassword = async (
   }
 };
 
+// @route   GET /reset-password
+// @desc    Checks for forgot password token and render the form
+// @access  Public
 export const resetPassword = async (
   req: Request,
   res: Response,
@@ -372,6 +400,9 @@ export const resetPassword = async (
   }
 };
 
+// @route   POST /reset-password
+// @desc    Reset the password only if valid token
+// @access  Public
 export const resetPasswordPost = async (
   req: Request,
   res: Response,

@@ -27,3 +27,42 @@ export const activateSchema: Schema = {
       "Password cannot be empty and password length should be greater than 8 characters!",
   },
 };
+
+export const updateProfileSchema: Schema = {
+  firstName: {
+    in: ["body"],
+    isString: true,
+    trim: true,
+    notEmpty: true,
+    errorMessage: "First name cannot be empty!",
+    optional: {
+      options: {
+        nullable: false,
+      },
+    },
+  },
+  lastName: {
+    in: ["body"],
+    isString: true,
+    trim: true,
+    notEmpty: true,
+    errorMessage: "Last name is cannot be empty",
+    optional: {
+      options: {
+        nullable: false,
+      },
+    },
+  },
+  bio: {
+    in: ["body"],
+    isString: true,
+    trim: true,
+    notEmpty: true,
+    errorMessage: "Bio cannot be empty!",
+    optional: {
+      options: {
+        nullable: false,
+      },
+    },
+  },
+};

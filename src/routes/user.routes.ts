@@ -1,9 +1,16 @@
 import { Router } from "express";
 import { checkSchema } from "express-validator";
-import { activate, updateProfile } from "../controllers/user.controller";
+import uploadImage from "../config/multerCoinfg";
+import {
+  activate,
+  deleteAccount,
+  getMe,
+  getUsers,
+  updateProfile,
+} from "../controllers/user.controller";
 import authenticate from "../middleware/authenticate";
 import validateRequestBody from "../middleware/validateRequestBody";
-import { activateSchema } from "../validation/user";
+import { activateSchema, updateProfileSchema } from "../validation/user";
 
 const userRouter = Router();
 
@@ -15,6 +22,17 @@ userRouter.put(
   activate
 );
 
-userRouter.route("/update-profile").put(authenticate, updateProfile);
+userRouter.get("/me", authenticate, getMe);
+
+userRouter
+  .route("/")
+  .put(
+    authenticate,
+    checkSchema(updateProfileSchema),
+    validateRequestBody,
+    updateProfile
+  )
+  .delete(authenticate, deleteAccount)
+  .get(authenticate, getUsers);
 
 export default userRouter;

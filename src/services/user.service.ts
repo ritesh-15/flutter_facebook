@@ -36,7 +36,6 @@ class UserService {
     isActivated: true,
     password: false,
     createdAt: false,
-    updatedAt: false,
     resetExpiry: false,
     resetToken: false,
   };
@@ -47,7 +46,9 @@ class UserService {
   ): any => {
     return PrismaProvider.instance().user.findUnique({
       where: query,
-      select: selectOptions,
+      select: {
+        ...selectOptions,
+      },
     });
   };
 
@@ -57,10 +58,53 @@ class UserService {
     });
   };
 
-  static update = (query: QueryInterface, data: UserInterface): any => {
+  static deleteOne = (id: string) => {
+    return PrismaProvider.instance().user.delete({
+      where: {
+        id,
+      },
+    });
+  };
+
+  static update = (
+    query: QueryInterface,
+    data: UserInterface,
+    select = this.SelectOptions
+  ) => {
     return PrismaProvider.instance().user.update({
       where: query,
       data: data,
+      select: select,
+    });
+  };
+
+  private static findAllUsersOptionsDefault = {
+    skip: 1,
+    take: 10,
+    select: this.SelectOptions,
+    filter: {},
+  };
+
+  static findAllUsers = (
+    data: {
+      skip?: number;
+      take?: number;
+      select?: any;
+      filter?: any;
+    } = this.findAllUsersOptionsDefault
+  ) => {
+    const { select, skip, take, filter } = {
+      ...this.findAllUsersOptionsDefault,
+      ...data,
+    };
+
+    return PrismaProvider.instance().user.findMany({
+      where: filter,
+      select: {
+        ...select,
+      },
+      take: take,
+      skip: skip,
     });
   };
 }

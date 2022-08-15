@@ -3,6 +3,7 @@ import { Request } from "express";
 const getTokenFromRequest = (
   req: Request,
   name: string,
+  cookieName: string = "accessToken",
   requiredPrefix: string = "Bearer"
 ): string | null => {
   let token = null;
@@ -10,7 +11,7 @@ const getTokenFromRequest = (
   const tokenFromHeader: any = req.headers[name.toLowerCase()];
 
   if (!tokenFromHeader) {
-    token = req.cookies[name];
+    token = req.cookies[cookieName];
     if (!token) return null;
     return token;
   }

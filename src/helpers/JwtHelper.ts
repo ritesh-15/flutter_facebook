@@ -6,8 +6,9 @@ import {
 import jwt, { JwtPayload } from "jsonwebtoken";
 import RedisClient from "../utils/redis";
 import { Request, Response } from "express";
+import SessionService from "../services/session.service";
 
-interface JwtPayloadCustom extends JwtPayload {
+export interface JwtPayloadCustom extends JwtPayload {
   id: string;
 }
 
@@ -20,7 +21,7 @@ class JwtHelper {
     });
   }
 
-  static generateTokens(id: string) {
+  generateTokens(id: string) {
     const accessToken = jwt.sign({ id }, ACCESS_TOKEN_SECRET, {
       expiresIn: "15m",
     });
@@ -32,7 +33,11 @@ class JwtHelper {
     return { accessToken, refreshToken };
   }
 
-  static setInCookie(res: Response, name: string, value: string) {
+  createSession(data: { token: string; userId: string }) {
+    return SessionService.createSession(data);
+  }
+
+  setInCookie(res: Response, name: string, value: string) {
     res.cookie(name, value, {
       httpOnly: true,
       secure: true,
@@ -51,18 +56,6 @@ class JwtHelper {
 
   static validateRefreshToken(token: string): JwtPayloadCustom {
     return <JwtPayloadCustom>jwt.verify(token, REFRESH_TOKEN_SECRET);
-  }
-
-  static async storeInCache(id: string, token: string) {
-    await RedisClient.instance().set(`${JwtHelper.JWT_TOKEN_KEY}-${id}`, token);
-  }
-
-  static async getFromCache(id: string) {
-    return await RedisClient.instance().get(`${JwtHelper.JWT_TOKEN_KEY}-${id}`);
-  }
-
-  static async removeFromCache(id: string) {
-    return await RedisClient.instance().del(`${JwtHelper.JWT_TOKEN_KEY}-${id}`);
   }
 }
 
