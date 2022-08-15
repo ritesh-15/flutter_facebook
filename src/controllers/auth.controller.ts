@@ -14,9 +14,13 @@ interface SignupInterface {
   email: string;
 }
 
-// @route   POST api/auth/signup
-// @desc    Register user
-// @access  Public
+/**
+ * 
+ *@route   POST api/auth/signup
+  @desc    Register User
+  @access  Public
+ * 
+ */
 export const signUp = async (
   req: Request,
   res: Response,
@@ -58,9 +62,13 @@ interface SignInInterface {
   password: string;
 }
 
-// @route   POST api/auth/signin
-// @desc    Login user
-// @access  Public
+/**
+ * 
+ *@route   POST api/auth/signin
+  @desc    Login user
+  @access  Public
+ * 
+ */
 export const signIn = async (
   req: Request,
   res: Response,
@@ -118,9 +126,14 @@ interface VerifyOtpInterface {
   code: number;
   hash: string;
 }
-// @route   POST api/auth/verifyOtp
-// @desc    Verify Otp
-// @access  Public
+
+/**
+ * 
+ *@route   POST api/auth/verify-otp
+  @desc    Verify Otp
+  @access  Public
+ * 
+ */
 export const verifyOtp = async (
   req: Request,
   res: Response,
@@ -177,9 +190,13 @@ interface ResendOtpInterface {
   email: string;
 }
 
-// @route   POST api/auth/resendOtp
-// @desc    Resend Otp
-// @access  Public
+/**
+ * 
+ *@route   POST api/auth/resend-otp
+  @desc    Resend Otp
+  @access  Public
+ * 
+ */
 export const resendOtp = async (
   req: Request,
   res: Response,
@@ -212,9 +229,13 @@ export const resendOtp = async (
   }
 };
 
-// @route   GET api/auth/refresh
-// @desc    Refresh token
-// @access  Public
+/**
+ * 
+ *@route   GET api/auth/refresh
+  @desc    Refresh tokens
+  @access  Public
+ * 
+ */
 export const refresh = async (
   req: Request,
   res: Response,
@@ -243,7 +264,7 @@ export const refresh = async (
       token: receivedRefreshToken,
     });
 
-    //?? Token reuse case
+    // Token reuse case
 
     if (!foundSession) {
       res.clearCookie("accessToken");
@@ -274,16 +295,20 @@ export const refresh = async (
       ok: true,
       message: "Tokens refresh successfully!",
       accessToken,
-      refresh,
+      refreshToken,
     });
   } catch (error) {
     return next(CreateHttpError.internalServerError());
   }
 };
 
-// @route   DELETE api/auth/logout
-// @desc    Log out user
-// @access  Private
+/**
+ * 
+ *@route   DELETE api/auth/logout
+  @desc    Logout User
+  @access  Private
+ * 
+ */
 export const logout = async (
   req: Request,
   res: Response,
@@ -308,9 +333,13 @@ interface ForgotPasswordInterface {
   email: string;
 }
 
-// @route   POST api/auth/forgot-password
-// @desc    Forgot password
-// @access  Public
+/**
+ * 
+ *@route   POST api/auth/forgot-password
+  @desc    Forgot password
+  @access  Public
+ * 
+ */
 export const forgotPassword = async (
   req: Request,
   res: Response,
@@ -358,9 +387,13 @@ export const forgotPassword = async (
   }
 };
 
-// @route   GET /reset-password
-// @desc    Checks for forgot password token and render the form
-// @access  Public
+/**
+ * 
+ *@route   GET /reset-password
+  @desc    Reset password page
+  @access  Public
+ * 
+ */
 export const resetPassword = async (
   req: Request,
   res: Response,
@@ -400,9 +433,13 @@ export const resetPassword = async (
   }
 };
 
-// @route   POST /reset-password
-// @desc    Reset the password only if valid token
-// @access  Public
+/**
+ * 
+ *@route   POST /reset-password
+  @desc    Reset password post request
+  @access  Public
+ * 
+ */
 export const resetPasswordPost = async (
   req: Request,
   res: Response,

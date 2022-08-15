@@ -180,7 +180,6 @@ interface GetUsersQuery {
   @access  Private
  * 
  */
-// !: remaining this method
 export const getUsers = async (
   req: Request,
   res: Response,
