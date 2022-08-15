@@ -25,6 +25,7 @@ class MyTheme {
   static Color secondary = const Color(0xff42B72A);
   static Color error = const Color(0xffc72c41);
   static Color success = Colors.green[500]!;
+  static Color iconColor = Colors.grey[200]!;
 
   static String fontFamily = GoogleFonts.poppins().fontFamily!;
 }

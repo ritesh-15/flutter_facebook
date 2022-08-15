@@ -9,6 +9,7 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
+  // ignore: unused_field
   final _baseController = Get.put(BaseController());
 
   MyApp({Key? key}) : super(key: key);
@@ -22,6 +23,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       getPages: NavigationRouter.routes,
       initialRoute: NavigationRouter.splashRoute,
+      themeMode: ThemeMode.light,
     );
   }
 }

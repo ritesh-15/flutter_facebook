@@ -43,7 +43,6 @@ class _SplashPageState extends State<SplashPage> {
     await Future.delayed(const Duration(seconds: 1));
 
     if (!isFound) {
-      // redirect to login screen
       await Get.offNamedUntil(NavigationRouter.loginRoute, (route) => false);
       return;
     }

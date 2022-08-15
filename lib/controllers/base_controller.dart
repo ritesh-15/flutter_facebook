@@ -1,9 +1,10 @@
 import 'package:facebook/constants/constants.dart';
 import 'package:facebook/model/auth/refresh_response/refresh_response.dart';
+import 'package:facebook/model/user/me_response.dart';
 import 'package:facebook/model/user/user.dart';
 import 'package:facebook/routes/navigation_routes.dart';
-import 'package:facebook/services/auth/auth_service.dart';
 import 'package:facebook/services/token_service.dart';
+import 'package:facebook/services/user/user_service.dart';
 import 'package:get/get.dart';
 
 class BaseController extends GetxController {
@@ -20,30 +21,23 @@ class BaseController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    _refresh();
+    _me();
   }
 
-  void _refresh() async {
+  void _me() async {
     final bool isFound =
         await TokenService.isTokenExits(Constants.refreshToken);
 
     if (!isFound) return;
-
     loading = true;
-
-    final result = await AuthService.refresh();
-
-    if (result is RefreshResponse) {
-      loading = false;
-      await TokenService.storeTokens(result.accessToken!, result.refreshToken!);
+    final result = await UserService.me();
+    if (result is MeResponse) {
       user = result.user!;
       return;
     }
 
     await TokenService.clearTokens();
-
     loading = false;
-
     await Get.offNamedUntil(NavigationRouter.loginRoute, (route) => false);
   }
 }
