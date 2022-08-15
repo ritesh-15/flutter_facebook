@@ -3,6 +3,7 @@ import CreateHttpError from "../utils/CreateHttpError";
 import UserService from "../services/user.service";
 import JwtHelper from "../helpers/JwtHelper";
 import getTokenFromRequest from "../utils/getTokenFromRequest";
+import UserInterface from "../interfaces/UserInterface";
 
 const authenticate = async (
   req: Request,
@@ -16,10 +17,9 @@ const authenticate = async (
 
     const payload = JwtHelper.validateAccessToken(token);
 
-    const user = await UserService.findUnique(
-      { id: payload.id },
-      { id: true, email: true, isActivated: true, isVerified: true }
-    );
+    const user = await UserService.findUnique({
+      id: payload.id,
+    });
 
     if (!user) throw new Error("User not found!");
 

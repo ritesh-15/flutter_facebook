@@ -15,3 +15,10 @@ export const APP_BASE_URL: string = process.env.APP_BASE_URL!!;
 
 export const FORGOT_PASSWORD_SECRET: string =
   process.env.FORGOT_PASSWORD_SECRET!!;
+
+export const CLOUDINARY_API_KEY: string = process.env.CLOUDINARY_API_KEY!!;
+
+export const CLOUDINARY_API_SECRET: string =
+  process.env.CLOUDINARY_API_SECRET!!;
+
+export const CLOUD_NAME: string = process.env.CLOUD_NAME!!;

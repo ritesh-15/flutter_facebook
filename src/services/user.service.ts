@@ -24,7 +24,7 @@ interface QueryInterface {
 }
 
 class UserService {
-  static SelectOptions: SelectOptions = {
+  static SelectOptions = {
     id: true,
     firstName: true,
     lastName: true,
@@ -34,21 +34,15 @@ class UserService {
     bio: true,
     isVerified: true,
     isActivated: true,
-    password: false,
-    createdAt: false,
-    resetExpiry: false,
-    resetToken: false,
   };
 
   static findUnique = (
     query: QueryInterface,
-    selectOptions: SelectOptions = this.SelectOptions
+    selectOptions: any = this.SelectOptions
   ): any => {
     return PrismaProvider.instance().user.findUnique({
       where: query,
-      select: {
-        ...selectOptions,
-      },
+      select: selectOptions,
     });
   };
 
@@ -79,7 +73,7 @@ class UserService {
   };
 
   private static findAllUsersOptionsDefault = {
-    skip: 1,
+    skip: 0,
     take: 10,
     select: this.SelectOptions,
     filter: {},

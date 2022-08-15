@@ -2,19 +2,24 @@ import { NextFunction, Request, Response } from "express";
 import UserService from "../services/user.service";
 import CreateHttpError from "../utils/CreateHttpError";
 import bcrypt from "bcrypt";
-import PrismaProvider from "../utils/prisma";
-import RedisClient from "../utils/redis";
 import RedisHelper from "../helpers/RedisHelper";
-import SessionService from "../services/session.service";
+import CloudinaryHelper from "../helpers/CloudinaryHelper";
+import fs from "fs/promises";
+import extractPublicIdFromUrl from "../utils/getPublicIdFromUrl";
 
 interface ActivateInterface {
   firstName: string;
   lastName: string;
   password: string;
 }
-// @route   POST api/users/activate
-// @desc    Activate account
-// @access  Private
+
+/**
+ * 
+ *@route   PUT api/users/activate
+  @desc    Activate users account
+  @access  Private
+ * 
+ */
 export const activate = async (
   req: Request,
   res: Response,
@@ -44,9 +49,13 @@ export const activate = async (
   }
 };
 
-// @route   GET api/users/me
-// @desc    Get user details
-// @access  Private
+/**
+ * 
+ *@route   GET api/users/me
+  @desc    Get account details
+  @access  Private
+ * 
+ */
 export const getMe = async (
   req: Request,
   res: Response,
@@ -90,9 +99,13 @@ interface UpdateProfileInterface {
   bio: string;
 }
 
-// @route   PUT api/users
-// @desc    Update profile
-// @access  Private
+/**
+ * 
+ *@route   PUT api/users
+  @desc    Update user profile
+  @access  Private
+ * 
+ */
 export const updateProfile = async (
   req: Request,
   res: Response,
@@ -110,6 +123,11 @@ export const updateProfile = async (
       }
     );
 
+    await RedisHelper.set(
+      `${RedisHelper.USER}-${user.id}`,
+      JSON.stringify(user)
+    );
+
     return res.json({
       ok: true,
       message: "Profile updated successfully!",
@@ -120,9 +138,13 @@ export const updateProfile = async (
   }
 };
 
-// @route   DELETE api/users
-// @desc    Delete account
-// @access  Private
+/**
+ * 
+ *@route   DELETE api/users
+  @desc    Delete user account
+  @access  Private
+ * 
+ */
 export const deleteAccount = async (
   req: Request,
   res: Response,
@@ -134,6 +156,8 @@ export const deleteAccount = async (
     // clear the cookies
     res.clearCookie("accessToken");
     res.clearCookie("refreshToken");
+
+    await RedisHelper.remove(`${RedisHelper.USER}-${req.user?.id!}`);
 
     return res.json({
       ok: true,
@@ -148,9 +172,15 @@ interface GetUsersQuery {
   page?: string;
   query?: string;
 }
-// @route   GET api/users
-// @desc    Get all users
-// @access  Private
+
+/**
+ * 
+ *@route   GET api/users
+  @desc    Get all users
+  @access  Private
+ * 
+ */
+// !: remaining this method
 export const getUsers = async (
   req: Request,
   res: Response,
@@ -196,5 +226,101 @@ export const getUsers = async (
     });
   } catch (error) {
     next(CreateHttpError.internalServerError());
+  }
+};
+
+/**
+ * 
+ *@route   POST api/users/update-avatar
+  @desc    Update user avatar
+  @access  Private
+ * 
+ */
+export const updateAvatar = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  if (!req.file) {
+    return next(CreateHttpError.badRequest("No file uploaded"));
+  }
+
+  try {
+    const uploadResult = await CloudinaryHelper.uploadImage(req.file.path);
+
+    await fs.unlink(req.file.path);
+
+    if (req.user?.avatar != null) {
+      const publicId = extractPublicIdFromUrl(req.user?.avatar);
+      await CloudinaryHelper.deleteImageByPublicId(publicId);
+    }
+
+    const user = await UserService.update(
+      { id: req.user?.id! },
+      {
+        avatar: uploadResult.secure_url,
+      }
+    );
+
+    await RedisHelper.set(
+      `${RedisHelper.USER}-${user.id}`,
+      JSON.stringify(user)
+    );
+
+    res.json({
+      ok: true,
+      message: "Uploaded avatar successfully!",
+      user,
+    });
+  } catch (error) {
+    return next(CreateHttpError.internalServerError());
+  }
+};
+
+/**
+ * 
+ *@route   POST api/users/update-cover
+  @desc    Update user avatar
+  @access  Private
+ * 
+ */
+export const uploadCover = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  if (!req.file) {
+    return next(CreateHttpError.badRequest("No file uploaded"));
+  }
+
+  try {
+    const uploadResult = await CloudinaryHelper.uploadImage(req.file.path);
+
+    await fs.unlink(req.file.path);
+
+    if (req.user?.cover != null) {
+      const publicId = extractPublicIdFromUrl(req.user?.cover);
+      await CloudinaryHelper.deleteImageByPublicId(publicId);
+    }
+
+    const user = await UserService.update(
+      { id: req.user?.id! },
+      {
+        cover: uploadResult.secure_url,
+      }
+    );
+
+    await RedisHelper.set(
+      `${RedisHelper.USER}-${user.id}`,
+      JSON.stringify(user)
+    );
+
+    res.json({
+      ok: true,
+      message: "Uploaded avatar successfully!",
+      user,
+    });
+  } catch (error) {
+    return next(CreateHttpError.internalServerError());
   }
 };
