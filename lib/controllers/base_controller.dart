@@ -1,5 +1,5 @@
 import 'package:facebook/constants/constants.dart';
-import 'package:facebook/model/user/me_response.dart';
+import 'package:facebook/model/user/user_response.dart';
 import 'package:facebook/model/user/user.dart';
 import 'package:facebook/routes/navigation_routes.dart';
 import 'package:facebook/services/token_service.dart';
@@ -37,7 +37,7 @@ class BaseController extends GetxController {
     loading = true;
     final result = await UserService.me();
 
-    if (result is MeResponse) {
+    if (result is UserResponse) {
       user = result.user!;
       isLoggedIn = true;
       return;

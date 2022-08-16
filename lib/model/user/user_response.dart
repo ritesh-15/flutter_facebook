@@ -2,12 +2,12 @@ import 'dart:convert';
 
 import 'package:facebook/model/user/user.dart';
 
-class MeResponse {
+class UserResponse {
   bool? ok;
   String? message;
   User? user;
 
-  MeResponse({
+  UserResponse({
     this.ok,
     this.message,
     this.user,
@@ -18,7 +18,7 @@ class MeResponse {
     return 'MeResponse(ok: $ok, message: $message, user: $user)';
   }
 
-  factory MeResponse.fromMap(Map<String, dynamic> data) => MeResponse(
+  factory UserResponse.fromMap(Map<String, dynamic> data) => UserResponse(
         ok: data['ok'] as bool?,
         message: data['message'] as String?,
         user: data['user'] == null
@@ -32,8 +32,8 @@ class MeResponse {
         'user': user?.toMap(),
       };
 
-  factory MeResponse.fromJson(String data) {
-    return MeResponse.fromMap(json.decode(data) as Map<String, dynamic>);
+  factory UserResponse.fromJson(String data) {
+    return UserResponse.fromMap(json.decode(data) as Map<String, dynamic>);
   }
 
   String toJson() => json.encode(toMap());
