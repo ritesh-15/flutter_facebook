@@ -39,13 +39,13 @@ class _HomePageState extends State<HomePage>
         },
         body: TabBarView(
           controller: _tabController,
-          children: [
-            const HomeTab(),
-            Center(child: Text("Not Implementd 🤒")),
-            Center(child: Text("Not Implementd 🤒")),
-            Center(child: Text("Not Implementd 🤒")),
-            Center(child: Text("Not Implementd 🤒")),
-            const ProfileTab()
+          children: const [
+            HomeTab(),
+            Center(child: Text("Not Implemented 🤒")),
+            Center(child: Text("Not Implemented 🤒")),
+            Center(child: Text("Not Implemented 🤒")),
+            Center(child: Text("Not Implemented 🤒")),
+            ProfileTab()
           ],
         ),
       ),

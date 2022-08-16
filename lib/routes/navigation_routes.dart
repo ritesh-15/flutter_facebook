@@ -4,6 +4,7 @@ import 'package:facebook/pages/authentication/login_page.dart';
 import 'package:facebook/pages/authentication/register_page.dart';
 import 'package:facebook/pages/authentication/verify_otp_page.dart';
 import 'package:facebook/pages/home_page.dart';
+import 'package:facebook/pages/profile_page.dart';
 import 'package:facebook/pages/splash_page.dart';
 import 'package:get/get.dart';
 
@@ -17,6 +18,7 @@ class NavigationRouter {
 
   // Home
   static const homeRoute = "/";
+  static const profileRoute = "/profile";
 
   // Splash
   static const splashRoute = "/splash";
@@ -54,6 +56,11 @@ class NavigationRouter {
     GetPage(
         name: homeRoute,
         page: () => const HomePage(),
+        transition: Transition.fadeIn,
+        transitionDuration: const Duration(milliseconds: 500)),
+    GetPage(
+        name: profileRoute,
+        page: () => const ProfilePage(),
         transition: Transition.fadeIn,
         transitionDuration: const Duration(milliseconds: 500)),
     // splash screen route
