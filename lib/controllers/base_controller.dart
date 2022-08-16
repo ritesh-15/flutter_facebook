@@ -1,10 +1,10 @@
 import 'package:facebook/constants/constants.dart';
-import 'package:facebook/model/auth/refresh_response/refresh_response.dart';
 import 'package:facebook/model/user/me_response.dart';
 import 'package:facebook/model/user/user.dart';
 import 'package:facebook/routes/navigation_routes.dart';
 import 'package:facebook/services/token_service.dart';
 import 'package:facebook/services/user/user_service.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class BaseController extends GetxController {
@@ -12,6 +12,11 @@ class BaseController extends GetxController {
   final Rx<User> _user = User().obs;
   User get user => _user.value;
   set user(User user) => _user.value = user;
+
+  // is Logged In
+  final Rx<bool> _isLoggedIn = false.obs;
+  bool get isLoggedIn => _isLoggedIn.value;
+  set isLoggedIn(bool user) => _isLoggedIn.value = user;
 
   // loading state
   final RxBool _loading = false.obs;
@@ -31,8 +36,10 @@ class BaseController extends GetxController {
     if (!isFound) return;
     loading = true;
     final result = await UserService.me();
+
     if (result is MeResponse) {
       user = result.user!;
+      isLoggedIn = true;
       return;
     }
 

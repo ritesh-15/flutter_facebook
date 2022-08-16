@@ -1,10 +1,17 @@
-import 'package:facebook/theme/my_theme.dart';
-import 'package:facebook/widgets/rounded_icon_button.dart';
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import 'package:facebook/theme/my_theme.dart';
+import 'package:facebook/widgets/rounded_icon_button.dart';
+
 class TopAppBar extends StatefulWidget {
-  const TopAppBar({Key? key}) : super(key: key);
+  final TabController? tabController;
+
+  const TopAppBar({
+    Key? key,
+    required this.tabController,
+  }) : super(key: key);
 
   @override
   State<TopAppBar> createState() => _TopAppBarState();
@@ -17,16 +24,14 @@ class _TopAppBarState extends State<TopAppBar>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(vsync: this, length: 6);
-    _tabController?.addListener(_handleTabSelection);
+    _tabController = widget.tabController;
   }
 
   @override
   Widget build(BuildContext context) {
     return SliverPadding(
-      padding: const EdgeInsets.symmetric(horizontal: 8),
+      padding: const EdgeInsets.symmetric(vertical: 8),
       sliver: SliverAppBar(
-        floating: true,
         backgroundColor: Theme.of(context).canvasColor,
         title: Text(
           "facebook",
@@ -44,7 +49,10 @@ class _TopAppBarState extends State<TopAppBar>
           SizedBox(
             width: 12,
           ),
-          RoundedIconButton(icon: FontAwesomeIcons.facebookMessenger)
+          RoundedIconButton(icon: FontAwesomeIcons.facebookMessenger),
+          SizedBox(
+            width: 12,
+          ),
         ],
         bottom: TabBar(
             controller: _tabController,
@@ -95,17 +103,15 @@ class _TopAppBarState extends State<TopAppBar>
               ),
               Tab(
                   icon: Icon(
-                FontAwesomeIcons.bars,
+                FontAwesomeIcons.solidCircleUser,
                 color: _tabController?.index == 5
                     ? MyTheme.primary
                     : MyTheme.iconColor,
               )),
             ]),
+        floating: true,
+        pinned: true,
       ),
     );
-  }
-
-  void _handleTabSelection() {
-    setState(() {});
   }
 }

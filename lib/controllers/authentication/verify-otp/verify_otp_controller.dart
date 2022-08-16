@@ -103,6 +103,7 @@ class VerifyOtpController extends GetxController {
     // store the user
     final baseController = Get.find<BaseController>();
     baseController.user = result.user!;
+    baseController.isLoggedIn = true;
 
     SnackbarHelper.showSnackBar(
         "Yep", "Your email address is successfully verified!",
