@@ -6,6 +6,7 @@ import RedisHelper from "../helpers/RedisHelper";
 import CloudinaryHelper from "../helpers/CloudinaryHelper";
 import fs from "fs/promises";
 import extractPublicIdFromUrl from "../utils/getPublicIdFromUrl";
+import PrismaProvider from "../utils/prisma";
 
 interface ActivateInterface {
   firstName: string;
@@ -318,6 +319,109 @@ export const uploadCover = async (
       ok: true,
       message: "Uploaded avatar successfully!",
       user,
+    });
+  } catch (error) {
+    return next(CreateHttpError.internalServerError());
+  }
+};
+
+/**
+ * 
+ *@route   POST api/users/follow/:id
+  @desc    Follow account
+  @access  Private
+ * 
+ */
+export const follow = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { id } = req.params;
+
+  try {
+    const userToFollow = await UserService.findUnique({ id });
+
+    if (!userToFollow)
+      return next(CreateHttpError.notFound("User not found with given id!"));
+
+    await UserService.follow(userToFollow.id, req.user?.id!);
+
+    return res.json({
+      ok: true,
+      message: "Followed successfully!",
+      followedTo: userToFollow.id,
+    });
+  } catch (error) {
+    return next(CreateHttpError.internalServerError());
+  }
+};
+
+/**
+ * 
+ *@route   POST api/users/unfollow/:id
+  @desc    UnFollow account
+  @access  Private
+ * 
+ */
+export const unFollow = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { id } = req.params;
+
+  try {
+    const followingUser = await UserService.findFollowing(id, req.user?.id!);
+
+    if (!followingUser)
+      return next(
+        CreateHttpError.notFound("You are not following the account!")
+      );
+
+    await UserService.unFollow(id, req.user?.id!);
+
+    return res.json({
+      ok: true,
+      message: "UnFollowed successfully!",
+    });
+  } catch (error) {
+    return next(CreateHttpError.internalServerError());
+  }
+};
+
+/**
+ * 
+ *@route   GET api/users/followers-followings
+  @desc    Get followers and followings
+  @access  Private
+ * 
+ */
+
+export const followersAndFollowings = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const data = await UserService.followingsAndFollowers(req.user?.id!);
+
+    const followings = data.map((record) => {
+      if (record.follower.id == req.user?.id) {
+        return record;
+      }
+    });
+
+    const followers = data.map((record) => {
+      if (record.following.id == req.user?.id) {
+        return record;
+      }
+    });
+
+    return res.json({
+      ok: true,
+      followings,
+      followers,
     });
   } catch (error) {
     return next(CreateHttpError.internalServerError());

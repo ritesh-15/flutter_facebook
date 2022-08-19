@@ -101,6 +101,79 @@ class UserService {
       skip: skip,
     });
   };
+
+  static follow = (followerId: string, followingId: string) => {
+    return PrismaProvider.instance().follow.create({
+      data: {
+        followerId,
+        followingId,
+      },
+    });
+  };
+
+  static unFollow = (followerId: string, followingId: string) => {
+    return PrismaProvider.instance().follow.deleteMany({
+      where: {
+        AND: [
+          {
+            followerId,
+          },
+          {
+            followingId,
+          },
+        ],
+      },
+    });
+  };
+
+  static findFollowing = (followerId: string, followingId: string) => {
+    return PrismaProvider.instance().follow.findFirst({
+      where: {
+        AND: [
+          {
+            followerId,
+          },
+          {
+            followingId,
+          },
+        ],
+      },
+    });
+  };
+
+  static followingsAndFollowers = (userId: string) => {
+    return PrismaProvider.instance().follow.findMany({
+      where: {
+        OR: [
+          {
+            followerId: userId,
+          },
+          {
+            followingId: userId,
+          },
+        ],
+      },
+      select: {
+        id: true,
+        follower: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            avatar: true,
+          },
+        },
+        following: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            avatar: true,
+          },
+        },
+      },
+    });
+  };
 }
 
 export default UserService;

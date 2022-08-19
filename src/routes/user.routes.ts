@@ -4,6 +4,8 @@ import uploadImage from "../config/multerConfig";
 import {
   activate,
   deleteAccount,
+  follow,
+  followersAndFollowings,
   getMe,
   getUsers,
   updateAvatar,
@@ -13,7 +15,12 @@ import {
 import authenticate from "../middleware/authenticate";
 import { uploadAsCover, uploadAsAvatar } from "../middleware/uploadAsAvatar";
 import validateRequestBody from "../middleware/validateRequestBody";
-import { activateSchema, updateProfileSchema } from "../validation/user";
+import {
+  activateSchema,
+  followSchema,
+  unFollowSchema,
+  updateProfileSchema,
+} from "../validation/user";
 
 const userRouter = Router();
 
@@ -49,5 +56,23 @@ userRouter.post(
   [authenticate, uploadImage.single("file"), uploadAsCover],
   uploadCover
 );
+
+userRouter.post(
+  "/follow/:id",
+  [authenticate],
+  checkSchema(followSchema),
+  validateRequestBody,
+  follow
+);
+
+userRouter.post(
+  "/unfollow/:id",
+  [authenticate],
+  checkSchema(unFollowSchema),
+  validateRequestBody,
+  follow
+);
+
+userRouter.get("/followers-followings", [authenticate], followersAndFollowings);
 
 export default userRouter;

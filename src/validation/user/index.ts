@@ -66,3 +66,25 @@ export const updateProfileSchema: Schema = {
     },
   },
 };
+
+export const followSchema: Schema = {
+  id: {
+    in: ["params"],
+    exists: true,
+    isString: true,
+    isUUID: true,
+    notEmpty: true,
+    errorMessage: "Follower id is required!",
+  },
+};
+
+export const unFollowSchema: Schema = {
+  id: {
+    in: ["params"],
+    exists: true,
+    isString: true,
+    isUUID: true,
+    notEmpty: true,
+    errorMessage: "Follower id is required!",
+  },
+};
