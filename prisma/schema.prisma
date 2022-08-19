@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
 }
 
 datasource db {
@@ -23,6 +24,8 @@ model User {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   sessions    Session[]
+  followers   Follow[]  @relation(name: "follower")
+  followings  Follow[]  @relation(name: "following")
 
   @@index([id, email])
 }
@@ -36,4 +39,16 @@ model Session {
   updatedAt DateTime @updatedAt
 
   @@index([id, userId, token])
+}
+
+model Follow {
+  id          String   @id @default(uuid())
+  follower    User     @relation(name: "follower", references: [id], onDelete: Cascade, fields: [followerId])
+  followerId  String
+  following   User     @relation(name: "following", references: [id], onDelete: Cascade, fields: [followingId])
+  followingId String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([id, followerId, followingId])
 }
