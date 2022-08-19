@@ -33,9 +33,15 @@ class BaseController extends GetxController {
     final bool isFound =
         await TokenService.isTokenExits(Constants.refreshToken);
 
+    print("👇👇👇");
+
     if (!isFound) return;
     loading = true;
+
     final result = await UserService.me();
+
+    print("👇👇👇");
+    print(result);
 
     if (result is UserResponse) {
       user = result.user!;
@@ -43,8 +49,8 @@ class BaseController extends GetxController {
       return;
     }
 
-    await TokenService.clearTokens();
     loading = false;
+    await TokenService.clearTokens();
     await Get.offNamedUntil(NavigationRouter.loginRoute, (route) => false);
   }
 }

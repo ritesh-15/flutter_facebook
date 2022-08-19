@@ -1,20 +1,21 @@
+import 'package:dio/dio.dart';
 import 'package:facebook/constants/constants.dart';
 import 'package:facebook/services/token_service.dart';
-import 'package:http_interceptor/http_interceptor.dart';
 
-class HeaderInterceptor implements InterceptorContract {
+class HeaderInterceptor extends Interceptor {
   @override
-  Future<RequestData> interceptRequest({required RequestData data}) async {
-    try {
-      final tokens = await TokenService.getTokens();
-      data.headers["refreshtoken"] = "Bearer ${tokens[Constants.refreshToken]}";
-      data.headers["authorization"] = "Bearer ${tokens[Constants.accessToken]}";
-      data.headers["Content-Type"] = "application/json";
-    } catch (e) {}
-    return data;
+  void onRequest(
+      RequestOptions options, RequestInterceptorHandler handler) async {
+    final tokens = await TokenService.getTokens();
+
+    options.headers["refreshtoken"] =
+        "Bearer ${tokens[Constants.refreshToken]}";
+
+    options.headers["authorization"] =
+        "Bearer ${tokens[Constants.accessToken]}";
+
+    options.headers["Content-Type"] = "application/json";
+
+    super.onRequest(options, handler);
   }
-
-  @override
-  Future<ResponseData> interceptResponse({required ResponseData data}) async =>
-      data;
 }

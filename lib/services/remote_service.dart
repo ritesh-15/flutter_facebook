@@ -1,11 +1,13 @@
+import 'package:dio/dio.dart';
 import 'package:facebook/api/header_interceptor.dart';
-import 'package:facebook/api/refresh_retry_policy.dart';
-import 'package:http/http.dart' as http;
-import 'package:http_interceptor/http/http.dart';
+import 'package:facebook/api/retry_interceptoros.dart';
+import 'package:facebook/constants/constants.dart';
 
 class RemoteService {
-  static final http.Client _client = InterceptedClient.build(
-      interceptors: [HeaderInterceptor()], retryPolicy: RefreshRetryPolicy());
+  static final Dio _dio = Dio(BaseOptions(baseUrl: Constants.apiBaseURL));
 
-  static http.Client get client => _client;
+  static Dio dio() {
+    _dio.interceptors.addAll([HeaderInterceptor(), RetryInterceptor()]);
+    return _dio;
+  }
 }
