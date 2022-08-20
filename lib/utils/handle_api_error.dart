@@ -5,6 +5,10 @@ import 'package:facebook/model/api_error_response.dart';
 
 handleApiError(dynamic error) {
   if (error is DioError) {
+    if (CancelToken.isCancel(error)) {
+      return "";
+    }
+
     return ApiErrorResponse.fromMap(error.response?.data).message;
   }
 

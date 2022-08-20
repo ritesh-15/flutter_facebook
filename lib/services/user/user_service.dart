@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:dio/dio.dart' as dio;
 import 'package:facebook/constants/constants.dart';
 import 'package:facebook/model/user/activate_response/activate_response.dart';
+import 'package:facebook/model/user/search_users_response/search_users_response.dart';
 import 'package:facebook/model/user/user_response.dart';
 import 'package:facebook/services/remote_service.dart';
 import 'package:facebook/utils/handle_api_error.dart';
@@ -91,13 +92,28 @@ class UserService {
   }
 
   static updateProfile(String firstName, String lastName, String bio) async {
-    final body = {"firstName": firstName, "lastName": lastName, "bio": bio};
+    final body = {
+      "firstName": firstName,
+      "lastName": lastName,
+      "bio": bio,
+    };
 
     try {
       const url = "$userEndPoint/";
       final response =
           await RemoteService.dio().put(url, data: jsonEncode(body));
       return UserResponse.fromMap(response.data);
+    } catch (e) {
+      return handleApiError(e);
+    }
+  }
+
+  static search(String query, dio.CancelToken cancelToken) async {
+    try {
+      const url = "$userEndPoint/";
+      final response = await RemoteService.dio().get(url,
+          queryParameters: {"query": query}, cancelToken: cancelToken);
+      return SearchUsersResponse.fromMap(response.data);
     } catch (e) {
       return handleApiError(e);
     }

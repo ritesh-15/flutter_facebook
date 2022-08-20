@@ -16,14 +16,17 @@ class RoundedIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-          color: Theme.of(context).cardColor, shape: BoxShape.circle),
-      child: Icon(
-        icon,
-        color: Theme.of(context).textTheme.headline1?.color,
-        size: 20,
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+            color: Theme.of(context).cardColor, shape: BoxShape.circle),
+        child: Icon(
+          icon,
+          color: Theme.of(context).textTheme.headline1?.color,
+          size: 20,
+        ),
       ),
     );
   }

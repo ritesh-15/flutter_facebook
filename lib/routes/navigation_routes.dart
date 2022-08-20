@@ -6,6 +6,7 @@ import 'package:facebook/pages/authentication/verify_otp_page.dart';
 import 'package:facebook/pages/edit_profile_page.dart';
 import 'package:facebook/pages/home_page.dart';
 import 'package:facebook/pages/profile_page.dart';
+import 'package:facebook/pages/search_page.dart';
 import 'package:facebook/pages/splash_page.dart';
 import 'package:get/get.dart';
 
@@ -21,6 +22,7 @@ class NavigationRouter {
   static const homeRoute = "/";
   static const profileRoute = "/profile";
   static const editProfileRoute = "/edit-profile";
+  static const searchRoute = "/search";
 
   // Splash
   static const splashRoute = "/splash";
@@ -75,6 +77,12 @@ class NavigationRouter {
     GetPage(
         name: editProfileRoute,
         page: () => const EditProfilePage(),
+        transition: Transition.rightToLeftWithFade,
+        transitionDuration: const Duration(milliseconds: _transitionDuration)),
+
+    GetPage(
+        name: searchRoute,
+        page: () => const SearchPage(),
         transition: Transition.rightToLeftWithFade,
         transitionDuration: const Duration(milliseconds: _transitionDuration)),
 

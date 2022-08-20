@@ -13,7 +13,7 @@ class RetryInterceptor extends Interceptor {
 
       if (response is ApiErrorResponse) {
         await TokenService.clearTokens();
-        return handler.next(err);
+        return handler.reject(err);
       }
 
       if (response is RefreshResponse) {

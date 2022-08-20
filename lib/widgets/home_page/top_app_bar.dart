@@ -1,9 +1,11 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:facebook/routes/navigation_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:facebook/theme/my_theme.dart';
 import 'package:facebook/widgets/rounded_icon_button.dart';
+import 'package:get/get.dart';
 
 class TopAppBar extends StatefulWidget {
   final TabController? tabController;
@@ -40,17 +42,22 @@ class _TopAppBarState extends State<TopAppBar>
               fontWeight: FontWeight.bold,
               color: MyTheme.primary),
         ),
-        actions: const [
-          RoundedIconButton(icon: FontAwesomeIcons.plus),
-          SizedBox(
+        actions: [
+          const RoundedIconButton(icon: FontAwesomeIcons.plus),
+          const SizedBox(
             width: 12,
           ),
-          RoundedIconButton(icon: FontAwesomeIcons.magnifyingGlass),
-          SizedBox(
+          RoundedIconButton(
+            icon: FontAwesomeIcons.magnifyingGlass,
+            onTap: () {
+              Get.toNamed(NavigationRouter.searchRoute);
+            },
+          ),
+          const SizedBox(
             width: 12,
           ),
-          RoundedIconButton(icon: FontAwesomeIcons.facebookMessenger),
-          SizedBox(
+          const RoundedIconButton(icon: FontAwesomeIcons.facebookMessenger),
+          const SizedBox(
             width: 12,
           ),
         ],
