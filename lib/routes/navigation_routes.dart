@@ -3,6 +3,7 @@ import 'package:facebook/pages/authentication/forgot_password_page.dart';
 import 'package:facebook/pages/authentication/login_page.dart';
 import 'package:facebook/pages/authentication/register_page.dart';
 import 'package:facebook/pages/authentication/verify_otp_page.dart';
+import 'package:facebook/pages/edit_profile_page.dart';
 import 'package:facebook/pages/home_page.dart';
 import 'package:facebook/pages/profile_page.dart';
 import 'package:facebook/pages/splash_page.dart';
@@ -19,6 +20,7 @@ class NavigationRouter {
   // Home
   static const homeRoute = "/";
   static const profileRoute = "/profile";
+  static const editProfileRoute = "/edit-profile";
 
   // Splash
   static const splashRoute = "/splash";
@@ -32,37 +34,50 @@ class NavigationRouter {
         page: () => const LoginPage(),
         transition: Transition.fade,
         transitionDuration: const Duration(milliseconds: _transitionDuration)),
+
     GetPage(
         name: registerRoute,
         page: () => const RegisterPage(),
         transition: Transition.fade,
         transitionDuration: const Duration(milliseconds: _transitionDuration)),
+
     GetPage(
         name: verifyOtpRoute,
         page: () => const VerifyOtpPage(),
         transition: Transition.rightToLeftWithFade,
         transitionDuration: const Duration(milliseconds: _transitionDuration)),
+
     GetPage(
         name: activateRoute,
         page: () => const ActivatePage(),
         transition: Transition.rightToLeftWithFade,
         transitionDuration: const Duration(milliseconds: _transitionDuration)),
+
     GetPage(
         name: forgotPasswordRoute,
         page: () => const ForgotPasswordPage(),
         transition: Transition.rightToLeftWithFade,
         transitionDuration: const Duration(milliseconds: _transitionDuration)),
+
     // home route
     GetPage(
         name: homeRoute,
         page: () => const HomePage(),
         transition: Transition.fadeIn,
         transitionDuration: const Duration(milliseconds: 500)),
+
     GetPage(
         name: profileRoute,
         page: () => const ProfilePage(),
         transition: Transition.fadeIn,
-        transitionDuration: const Duration(milliseconds: 500)),
+        transitionDuration: const Duration(milliseconds: _transitionDuration)),
+
+    GetPage(
+        name: editProfileRoute,
+        page: () => const EditProfilePage(),
+        transition: Transition.rightToLeftWithFade,
+        transitionDuration: const Duration(milliseconds: _transitionDuration)),
+
     // splash screen route
     GetPage(
         name: splashRoute,

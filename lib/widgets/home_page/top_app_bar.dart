@@ -103,7 +103,7 @@ class _TopAppBarState extends State<TopAppBar>
               ),
               Tab(
                   icon: Icon(
-                FontAwesomeIcons.solidCircleUser,
+                FontAwesomeIcons.bars,
                 color: _tabController?.index == 5
                     ? MyTheme.primary
                     : MyTheme.iconColor,

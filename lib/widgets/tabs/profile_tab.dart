@@ -107,6 +107,7 @@ class _ProfileTabUserDetails extends StatelessWidget {
                   "${_baseController.user.firstName} ${_baseController.user.lastName}",
                   style: const TextStyle(
                       fontWeight: FontWeight.bold, fontSize: 16),
+                  overflow: TextOverflow.ellipsis,
                 ),
                 const Text("See your profile")
               ],

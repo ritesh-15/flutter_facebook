@@ -19,7 +19,7 @@ class ProfileController extends GetxController {
   set coverImageFilePath(String value) => _coverImageFilePath.value = value;
 
   Future<void> uploadAsAvatar() async {
-    print("$avatarImageFilePath");
+    print("$avatarImageFilePath 🚀🚀");
 
     // make api call to upload avatar
     DialogHelper.showLoading(title: "Uploading profile image please wait...");

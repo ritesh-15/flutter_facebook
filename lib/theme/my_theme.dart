@@ -8,7 +8,11 @@ class MyTheme {
         fontFamily: fontFamily,
         canvasColor: Colors.white,
         cardColor: Colors.grey[200],
-        brightness: Brightness.light);
+        brightness: Brightness.light,
+        appBarTheme: const AppBarTheme(
+            backgroundColor: Colors.white,
+            elevation: 0,
+            iconTheme: IconThemeData(color: Colors.black)));
   }
 
   static ThemeData darkTheme() {

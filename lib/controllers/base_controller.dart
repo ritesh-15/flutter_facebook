@@ -4,7 +4,6 @@ import 'package:facebook/model/user/user.dart';
 import 'package:facebook/routes/navigation_routes.dart';
 import 'package:facebook/services/token_service.dart';
 import 'package:facebook/services/user/user_service.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class BaseController extends GetxController {
@@ -33,15 +32,14 @@ class BaseController extends GetxController {
     final bool isFound =
         await TokenService.isTokenExits(Constants.refreshToken);
 
-    print("👇👇👇");
+    if (!isFound) {
+      await Get.offNamedUntil(NavigationRouter.loginRoute, (route) => false);
+      return;
+    }
 
-    if (!isFound) return;
     loading = true;
 
     final result = await UserService.me();
-
-    print("👇👇👇");
-    print(result);
 
     if (result is UserResponse) {
       user = result.user!;

@@ -1,5 +1,6 @@
 import 'package:facebook/controllers/base_controller.dart';
 import 'package:facebook/controllers/users/profile_controller.dart';
+import 'package:facebook/routes/navigation_routes.dart';
 import 'package:facebook/theme/my_theme.dart';
 import 'package:facebook/utils/snackbar_helper.dart';
 import 'package:facebook/widgets/home_page/create_post_container.dart';
@@ -32,7 +33,7 @@ class _ProfilePageState extends State<ProfilePage> {
           const SizedBox(
             height: 12,
           ),
-          _ProfileActions(),
+          const _ProfileActions(),
           const SizedBox(
             height: 12,
           ),
@@ -70,24 +71,29 @@ class _ProfileActions extends StatelessWidget {
               )
             ]),
           ),
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-            decoration: BoxDecoration(
-                color: MyTheme.lightGrey,
-                borderRadius: BorderRadius.circular(8)),
-            child: Row(children: const [
-              Icon(
-                FontAwesomeIcons.pen,
-                color: Colors.black,
-                size: 20,
-              ),
-              SizedBox(
-                width: 12,
-              ),
-              Text(
-                "Edit Profile",
-              )
-            ]),
+          InkWell(
+            onTap: () {
+              Get.toNamed(NavigationRouter.editProfileRoute);
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+              decoration: BoxDecoration(
+                  color: MyTheme.lightGrey,
+                  borderRadius: BorderRadius.circular(8)),
+              child: Row(children: const [
+                Icon(
+                  FontAwesomeIcons.pen,
+                  color: Colors.black,
+                  size: 20,
+                ),
+                SizedBox(
+                  width: 12,
+                ),
+                Text(
+                  "Edit Profile",
+                )
+              ]),
+            ),
           ),
           Container(
               padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
@@ -116,15 +122,24 @@ class _UserNameAndBio extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Text(
-          "${_baseController.user.firstName} ${_baseController.user.lastName}",
-          style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-        ),
-        Text(_baseController.user.bio ?? "")
-      ],
-    );
+    return Obx(() => Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              Text(
+                "${_baseController.user.firstName} ${_baseController.user.lastName}",
+                style:
+                    const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+              Text(
+                _baseController.user.bio ?? "",
+                style: const TextStyle(fontSize: 14),
+                textAlign: TextAlign.center,
+              )
+            ],
+          ),
+        ));
   }
 }
 
@@ -139,92 +154,124 @@ class _CoverAndAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Container(
-        child: Stack(
-          children: [
-            Container(
-              height: 250,
-              width: double.maxFinite,
-            ),
-            if (_baseController.isLoggedIn &&
-                _baseController.user.cover != null &&
-                _baseController.user.cover!.isNotEmpty)
+    return Obx(() => Padding(
+          padding: const EdgeInsets.all(16),
+          child: Stack(
+            children: [
               Container(
+                height: 250,
+                width: double.maxFinite,
+              ),
+              if (_baseController.isLoggedIn &&
+                  _baseController.user.cover != null &&
+                  _baseController.user.cover!.isNotEmpty)
+                Container(
+                    height: 200,
+                    width: double.maxFinite,
+                    child: Image.network(
+                      _baseController.user.cover!,
+                      fit: BoxFit.cover,
+                      height: 200,
+                      width: double.maxFinite,
+                    ))
+              else
+                Container(
                   height: 200,
                   width: double.maxFinite,
-                  child: Image.network(_baseController.user.cover!))
-            else
-              Container(
-                height: 200,
-                width: double.maxFinite,
-                decoration: BoxDecoration(
-                  color: MyTheme.lightGrey,
-                  borderRadius: BorderRadius.circular(12),
+                  decoration: BoxDecoration(
+                    color: MyTheme.lightGrey,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 16, horizontal: 0),
+                    child: GestureDetector(
+                      onTap: () {
+                        // choose cover image
+                        showModalBottomSheet(
+                            context: context,
+                            builder: (context) {
+                              return const ChooseImageBottomSheet(
+                                isCoverImage: true,
+                              );
+                            });
+                      },
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Icon(
+                              FontAwesomeIcons.camera,
+                              color: MyTheme.iconColor,
+                            ),
+                            const SizedBox(
+                              width: 12,
+                            ),
+                            Text(
+                              "Add Cover Photo",
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: MyTheme.iconColor,
+                              ),
+                            )
+                          ]),
+                    ),
+                  ),
                 ),
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 16, horizontal: 0),
+              Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: Container(
+                    child: Stack(
+                      alignment: AlignmentDirectional.center,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(100),
+                          child: Image.network(_baseController.user.avatar!,
+                              width: 150, height: 150, fit: BoxFit.cover),
+                        ),
+                        Positioned(
+                            right: 0,
+                            left: 100,
+                            bottom: 0,
+                            child: GestureDetector(
+                              onTap: () {
+                                // choose avatar
+                                showModalBottomSheet(
+                                    context: context,
+                                    builder: (context) {
+                                      return const ChooseImageBottomSheet();
+                                    });
+                              },
+                              child: const RoundedIconButton(
+                                icon: FontAwesomeIcons.camera,
+                              ),
+                            ))
+                      ],
+                    ),
+                  )),
+              Positioned(
+                  right: 10,
+                  top: 10,
                   child: GestureDetector(
                     onTap: () {
+                      // choose cover image
                       showModalBottomSheet(
                           context: context,
                           builder: (context) {
-                            return ChooseImageBottomSheet(
+                            return const ChooseImageBottomSheet(
                               isCoverImage: true,
                             );
                           });
                     },
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Icon(
-                            FontAwesomeIcons.camera,
-                            color: MyTheme.iconColor,
-                          ),
-                          const SizedBox(
-                            width: 12,
-                          ),
-                          Text(
-                            "Add Cover Photo",
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: MyTheme.iconColor,
-                            ),
-                          )
-                        ]),
-                  ),
-                ),
-              ),
-            Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
-                child: Container(
-                  child: Stack(
-                    alignment: AlignmentDirectional.center,
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(100),
-                        child: Image.network(_baseController.user.avatar!,
-                            width: 150, height: 150, fit: BoxFit.cover),
-                      ),
-                      const Positioned(
-                          right: 0,
-                          left: 100,
-                          bottom: 0,
-                          child: RoundedIconButton(
-                            icon: FontAwesomeIcons.camera,
-                          ))
-                    ],
-                  ),
-                ))
-          ],
-        ),
-      ),
-    );
+                    child: const RoundedIconButton(
+                      icon: FontAwesomeIcons.camera,
+                    ),
+                  ))
+            ],
+          ),
+        ));
   }
 }
 
@@ -252,7 +299,6 @@ class _ChooseImageBottomSheetState extends State<ChooseImageBottomSheet> {
 
       if (widget.isCoverImage) {
         _profileController.coverImageFilePath = imagePath.path;
-        print("Here 🤧🤧");
         await _profileController.uploadAsCover();
       } else {
         _profileController.avatarImageFilePath = imagePath.path;

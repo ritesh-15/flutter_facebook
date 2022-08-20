@@ -37,9 +37,6 @@ class LoginController extends GetxController {
     final result =
         await AuthService.login(LoginRequest(email: email, password: password));
 
-    print("✅✅");
-    print(result);
-
     if (result is LoginResponse) {
       DialogHelper.hideLoading();
       await _loginSuccess(result);

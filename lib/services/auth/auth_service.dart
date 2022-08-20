@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:js_util';
+import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:facebook/model/api_error_response.dart';
@@ -11,7 +11,6 @@ import 'package:facebook/model/auth/refresh_response/refresh_response.dart';
 import 'package:facebook/model/auth/verify_response/verify_response.dart';
 import 'package:facebook/services/remote_service.dart';
 import 'package:facebook/utils/handle_api_error.dart';
-import 'package:flutter/foundation.dart';
 
 class AuthService {
   static const authEndPoint = "/auth";
@@ -20,13 +19,12 @@ class AuthService {
     try {
       const url = "$authEndPoint/signin";
       final response = await RemoteService.dio().post(url, data: body.toJson());
-      return LoginResponse.fromJson(response.data);
+      return LoginResponse.fromMap(response.data);
     } catch (e) {
-      print("${e.toString()} ❌❌❌");
       if (e is DioError) {
-        return ApiErrorResponse.fromJson(e.response?.data ?? "");
+        return ApiErrorResponse.fromMap(e.response?.data);
       }
-      return "Couldn't reach to the server!";
+      return handleApiError(e);
     }
   }
 
@@ -37,7 +35,7 @@ class AuthService {
       const url = "$authEndPoint/signup";
       final response =
           await RemoteService.dio().post(url, data: jsonEncode(body));
-      return OtpResponse.fromJson(response.data);
+      return OtpResponse.fromMap(response.data);
     } catch (e) {
       return handleApiError(e);
     }
@@ -50,7 +48,7 @@ class AuthService {
       const url = "$authEndPoint/verifyOtp";
       final response =
           await RemoteService.dio().post(url, data: jsonEncode(body));
-      return VerifyOtpResponse.fromJson(response.data);
+      return VerifyOtpResponse.fromMap(response.data);
     } catch (e) {
       return handleApiError(e);
     }
@@ -63,7 +61,7 @@ class AuthService {
       const url = "$authEndPoint/resendOtp";
       final response =
           await RemoteService.dio().post(url, data: jsonEncode(body));
-      return OtpResponse.fromJson(response.data);
+      return OtpResponse.fromMap(response.data);
     } catch (e) {
       return handleApiError(e);
     }
@@ -73,8 +71,11 @@ class AuthService {
     try {
       const url = "$authEndPoint/refresh";
       final response = await RemoteService.dio().get(url);
-      return RefreshResponse.fromJson(response.data);
+      return RefreshResponse.fromMap(response.data);
     } catch (e) {
+      if (e is DioError) {
+        return ApiErrorResponse.fromMap(e.response?.data);
+      }
       return handleApiError(e);
     }
   }
@@ -86,7 +87,7 @@ class AuthService {
       const url = "$authEndPoint/forgot-password";
       final response =
           await RemoteService.dio().post(url, data: jsonEncode(body));
-      return ForgotPasswordResponse.fromJson(response.data);
+      return ForgotPasswordResponse.fromMap(response.data);
     } catch (e) {
       return handleApiError(e);
     }
