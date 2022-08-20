@@ -8,6 +8,7 @@ import {
   followersAndFollowings,
   getMe,
   getUsers,
+  singleUser,
   updateAvatar,
   updateProfile,
   uploadCover,
@@ -74,5 +75,7 @@ userRouter.post(
 );
 
 userRouter.get("/followers-followings", [authenticate], followersAndFollowings);
+
+userRouter.get("/:id", [authenticate], singleUser);
 
 export default userRouter;

@@ -4,7 +4,7 @@
   "description": "",
   "main": "build/app.js",
   "scripts": {
-    "dev": "ts-node --files src/app.ts",
+    "dev": "nodemon",
     "start": "node build/app.js",
     "build": "tsc -p ."
   },
@@ -29,6 +29,7 @@
     "morgan": "^1.10.0",
     "multer": "1.4.5-lts.1",
     "redis": "^4.2.0",
+    "ts-node-dev": "^2.0.0",
     "uuid": "^8.3.2"
   },
   "devDependencies": {

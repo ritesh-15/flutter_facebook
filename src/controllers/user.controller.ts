@@ -190,28 +190,35 @@ export const getUsers = async (
 
   const filter = query
     ? {
-        OR: [
+        AND: [
           {
-            firstName: {
-              contains: query,
-              mode: "insensitive",
-            },
+            OR: [
+              {
+                firstName: {
+                  contains: query,
+                  mode: "insensitive",
+                },
+              },
+              {
+                lastName: {
+                  contains: query,
+                  mode: "insensitive",
+                },
+              },
+              {
+                email: {
+                  contains: query,
+                  mode: "insensitive",
+                },
+              },
+            ],
           },
-          {
-            lastName: {
-              contains: query,
-              mode: "insensitive",
-            },
-          },
-          {
-            email: {
-              contains: query,
-              mode: "insensitive",
-            },
-          },
+          { isActivated: true },
         ],
       }
-    : {};
+    : {
+        isActivated: true,
+      };
 
   try {
     const users = await UserService.findAllUsers({
@@ -226,6 +233,33 @@ export const getUsers = async (
     });
   } catch (error) {
     next(CreateHttpError.internalServerError());
+  }
+};
+
+/**
+ * 
+ *@route   GET api/users/:id
+  @desc    Get Single User Profile
+  @access  Private
+ * 
+ */
+export const singleUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = await UserService.findUnique({ id: req.params.id });
+
+    if (!user)
+      return next(CreateHttpError.notFound("User not found with given id!"));
+
+    return res.json({
+      ok: true,
+      user,
+    });
+  } catch (error) {
+    return next(CreateHttpError.internalServerError());
   }
 };
 
@@ -397,7 +431,6 @@ export const unFollow = async (
   @access  Private
  * 
  */
-
 export const followersAndFollowings = async (
   req: Request,
   res: Response,
