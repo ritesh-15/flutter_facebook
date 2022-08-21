@@ -23,8 +23,8 @@ class _CreatePostContainerState extends State<CreatePostContainer> {
       child: Row(children: [
         Obx(() {
           if (_baseController.isLoggedIn &&
-              _baseController.user.avatar != null) {
-            return ProfileAvatar(imageURL: _baseController.user.avatar!);
+              _baseController.user?.avatar != null) {
+            return ProfileAvatar(imageURL: _baseController.user!.avatar!);
           }
 
           return CircleAvatar(

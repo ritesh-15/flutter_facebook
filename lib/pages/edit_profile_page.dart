@@ -23,9 +23,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
   @override
   void initState() {
     super.initState();
-    _editProfileController.firstName = _baseController.user.firstName!;
-    _editProfileController.lastName = _baseController.user.lastName!;
-    _editProfileController.bio = _baseController.user.bio!;
+    _editProfileController.firstName = _baseController.user?.firstName!;
+    _editProfileController.lastName = _baseController.user?.lastName!;
+    _editProfileController.bio = _baseController.user?.bio ?? "";
   }
 
   @override

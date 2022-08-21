@@ -74,7 +74,7 @@ class _CoverAndAvatarState extends State<CoverAndAvatar> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: widget._profileController.user?.id ==
-                                  _baseController.user.id
+                                  _baseController.user?.id
                               ? [
                                   Icon(
                                     FontAwesomeIcons.camera,
@@ -122,7 +122,7 @@ class _CoverAndAvatarState extends State<CoverAndAvatar> {
                                           size: 32,
                                         ),
                                       )),
-                        if (_baseController.user.id ==
+                        if (_baseController.user?.id ==
                             widget._profileController.user?.id)
                           Positioned(
                               right: 0,
@@ -144,7 +144,8 @@ class _CoverAndAvatarState extends State<CoverAndAvatar> {
                       ],
                     ),
                   )),
-              if (_baseController.user.id == widget._profileController.user?.id)
+              if (_baseController.user?.id ==
+                  widget._profileController.user?.id)
                 Positioned(
                     right: 10,
                     top: 10,

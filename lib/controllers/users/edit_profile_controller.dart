@@ -1,4 +1,5 @@
 import 'package:facebook/controllers/base_controller.dart';
+import 'package:facebook/controllers/users/profile_controller.dart';
 import 'package:facebook/model/user/user_response.dart';
 import 'package:facebook/services/user/user_service.dart';
 import 'package:facebook/utils/dialog_helper.dart';
@@ -30,6 +31,13 @@ class EditProfileController extends GetxController {
 
     if (response is UserResponse) {
       Get.find<BaseController>().user = response.user!;
+
+      final profileController = Get.find<ProfileController>();
+
+      profileController.user?.firstName = response.user?.firstName!;
+      profileController.user?.lastName = response.user?.lastName!;
+      profileController.user?.bio = response.user?.bio!;
+
       Get.back();
       SnackbarHelper.showSnackBar("Yep!", "Profile updated successfully!",
           isError: false);

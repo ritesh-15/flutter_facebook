@@ -9,6 +9,7 @@ import 'package:facebook/model/auth/login_response/login_response.dart';
 import 'package:facebook/model/auth/otp_response/otp_response.dart';
 import 'package:facebook/model/auth/refresh_response/refresh_response.dart';
 import 'package:facebook/model/auth/verify_response/verify_response.dart';
+import 'package:facebook/model/logout_response.dart';
 import 'package:facebook/services/remote_service.dart';
 import 'package:facebook/utils/handle_api_error.dart';
 
@@ -88,6 +89,16 @@ class AuthService {
       final response =
           await RemoteService.dio().post(url, data: jsonEncode(body));
       return ForgotPasswordResponse.fromMap(response.data);
+    } catch (e) {
+      return handleApiError(e);
+    }
+  }
+
+  static logout() async {
+    try {
+      const url = "$authEndPoint/logout";
+      final response = await RemoteService.dio().delete(url);
+      return LogoutResponse.fromMap(response.data);
     } catch (e) {
       return handleApiError(e);
     }

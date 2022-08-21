@@ -8,9 +8,9 @@ import 'package:get/get.dart';
 
 class BaseController extends GetxController {
   // user state
-  final Rx<User> _user = User().obs;
-  User get user => _user.value;
-  set user(User user) => _user.value = user;
+  final _user = Rxn<User?>().obs;
+  User? get user => _user.value.value;
+  set user(User? user) => _user.value.value = user;
 
   // is Logged In
   final Rx<bool> _isLoggedIn = false.obs;

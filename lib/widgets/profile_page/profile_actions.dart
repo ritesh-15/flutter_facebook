@@ -1,4 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:facebook/routes/navigation_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
@@ -28,7 +29,7 @@ class _ProfileActionsState extends State<ProfileActions> {
         child: Expanded(
             child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: _profileController.user?.id == _baseController.user.id
+          children: _profileController.user?.id == _baseController.user?.id
               ? [
                   _ProfileActionButton(
                     backgroundColor: MyTheme.lightGrey,
@@ -40,6 +41,9 @@ class _ProfileActionsState extends State<ProfileActions> {
                     icon: FontAwesomeIcons.pen,
                     title: "Edit Profile",
                     textColor: Colors.white,
+                    onTap: () {
+                      Get.toNamed(NavigationRouter.editProfileRoute);
+                    },
                   ),
                   _ProfileActionButton(
                     backgroundColor: MyTheme.lightGrey,

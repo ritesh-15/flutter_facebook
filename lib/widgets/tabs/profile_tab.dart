@@ -1,5 +1,9 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:facebook/controllers/users/profile_tab_controller.dart';
 import 'package:facebook/routes/navigation_routes.dart';
+import 'package:facebook/theme/my_theme.dart';
+import 'package:facebook/utils/snackbar_helper.dart';
+import 'package:facebook/widgets/button.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
@@ -42,20 +46,31 @@ class _ProfileTabState extends State<ProfileTab> {
   }
 }
 
-class _AllShortcuts extends StatelessWidget {
+class _AllShortcuts extends StatefulWidget {
   const _AllShortcuts({Key? key}) : super(key: key);
+
+  @override
+  State<_AllShortcuts> createState() => _AllShortcutsState();
+}
+
+class _AllShortcutsState extends State<_AllShortcuts> {
+  final _profileTabController = Get.put(ProfileTabController());
 
   @override
   Widget build(BuildContext context) {
     return SliverToBoxAdapter(
       child: Column(
-        children: const [
-          Text(
-            "All Shortcuts",
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-          ),
-          // ignore: todo
-          // TODO: Implement all shortcuts
+        children: [
+          ButtonWidget(
+            title: "Log Out",
+            onTap: () async {
+              if (!SnackbarHelper.isSnackBarOpen) {
+                await _profileTabController.logout();
+              }
+            },
+            backgroundColor: MyTheme.iconColor,
+            fullWidth: true,
+          )
         ],
       ),
     );
@@ -96,7 +111,17 @@ class _ProfileTabUserDetails extends StatelessWidget {
         },
         child: Row(
           children: [
-            ProfileAvatar(imageURL: _baseController.user.avatar ?? ""),
+            if (_baseController.user?.avatar != null)
+              ProfileAvatar(imageURL: _baseController.user!.avatar!)
+            else
+              CircleAvatar(
+                radius: 20,
+                backgroundColor: Theme.of(context).cardColor,
+                child: const Icon(
+                  FontAwesomeIcons.solidUser,
+                  color: Colors.grey,
+                ),
+              ),
             const SizedBox(
               width: 12,
             ),
@@ -104,7 +129,7 @@ class _ProfileTabUserDetails extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "${_baseController.user.firstName} ${_baseController.user.lastName}",
+                  "${_baseController.user?.firstName} ${_baseController.user?.lastName}",
                   style: const TextStyle(
                       fontWeight: FontWeight.bold, fontSize: 16),
                   overflow: TextOverflow.ellipsis,
