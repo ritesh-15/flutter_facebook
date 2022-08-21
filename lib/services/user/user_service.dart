@@ -3,12 +3,15 @@ import 'dart:io';
 
 import 'package:dio/dio.dart' as dio;
 import 'package:facebook/constants/constants.dart';
+import 'package:facebook/model/follow_un_follow_response.dart';
 import 'package:facebook/model/user/activate_response/activate_response.dart';
+import 'package:facebook/model/user/profile_response/profile_response.dart';
 import 'package:facebook/model/user/search_users_response/search_users_response.dart';
 import 'package:facebook/model/user/user_response.dart';
 import 'package:facebook/services/remote_service.dart';
 import 'package:facebook/utils/handle_api_error.dart';
 import 'package:http_parser/http_parser.dart';
+// ignore: depend_on_referenced_packages
 import 'package:path/path.dart' as path;
 
 class UserService {
@@ -114,6 +117,37 @@ class UserService {
       final response = await RemoteService.dio().get(url,
           queryParameters: {"query": query}, cancelToken: cancelToken);
       return SearchUsersResponse.fromMap(response.data);
+    } catch (e) {
+      return handleApiError(e);
+    }
+  }
+
+  static getUserProfile(String? id) async {
+    try {
+      const url = "$userEndPoint/profile";
+      final response = await RemoteService.dio()
+          .get(url, queryParameters: id != null ? {"id": id} : {});
+      return ProfileResponse.fromMap(response.data);
+    } catch (e) {
+      return handleApiError(e);
+    }
+  }
+
+  static follow(String userId) async {
+    try {
+      final url = "$userEndPoint/follow/$userId";
+      final response = await RemoteService.dio().post(url);
+      return FollowUnFollowResponse.fromMap(response.data);
+    } catch (e) {
+      return handleApiError(e);
+    }
+  }
+
+  static unFollow(String userId) async {
+    try {
+      final url = "$userEndPoint/unfollow/$userId";
+      final response = await RemoteService.dio().post(url);
+      return FollowUnFollowResponse.fromMap(response.data);
     } catch (e) {
       return handleApiError(e);
     }
