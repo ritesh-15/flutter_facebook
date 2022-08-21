@@ -40,4 +40,33 @@ const uploadAsCover = async (
   }
 };
 
-export { uploadAsAvatar, uploadAsCover };
+const uploadAsPostImages = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  if (!req.files)
+    return next(CreateHttpError.badRequest("No image found to upload!"));
+
+  if (req.files.length === 0)
+    return next(
+      CreateHttpError.badRequest("At least one image is required for post!")
+    );
+
+  try {
+    const files: any = req.files;
+
+    await Promise.all(
+      files.map(async (file: Express.Multer.File) => {
+        const image = await Jimp.read(file.path);
+        await image.resize(700, Jimp.AUTO).quality(60).writeAsync(file.path);
+      })
+    );
+
+    next();
+  } catch (error) {
+    next(CreateHttpError.internalServerError());
+  }
+};
+
+export { uploadAsAvatar, uploadAsCover, uploadAsPostImages };

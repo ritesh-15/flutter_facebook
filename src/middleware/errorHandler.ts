@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import CreateHttpError from "../utils/CreateHttpError";
+import logger from "../utils/logger";
 
 const errorHandler = (
   error: Error,
@@ -8,6 +9,8 @@ const errorHandler = (
   next: NextFunction
 ) => {
   if (error instanceof CreateHttpError) {
+    logger.error(error);
+
     return res.status(error.status).json({
       ok: false,
       message: error.message,
@@ -15,6 +18,8 @@ const errorHandler = (
       error: error.error,
     });
   }
+
+  logger.error(error);
 
   return res.status(500).json({
     ok: false,

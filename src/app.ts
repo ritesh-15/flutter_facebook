@@ -3,8 +3,8 @@ import errorHandler from "./middleware/errorHandler";
 import redisConfig from "./config/redisConfig";
 import logger from "./utils/logger";
 import configRoutes from "./routes/config.routes";
-import configMiddleWares from "./middleware/configMiddlewares";
 import PrismaProvider from "./utils/prisma";
+import configMiddleWares from "./middleware/configMiddleWares";
 
 const main = async () => {
   const app = Express();

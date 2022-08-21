@@ -15,7 +15,7 @@ import {
   unFollow,
 } from "../controllers/user.controller";
 import authenticate from "../middleware/authenticate";
-import { uploadAsCover, uploadAsAvatar } from "../middleware/uploadAsAvatar";
+import { uploadAsCover, uploadAsAvatar } from "../middleware/compressFile";
 import validateRequestBody from "../middleware/validateRequestBody";
 import {
   activateSchema,

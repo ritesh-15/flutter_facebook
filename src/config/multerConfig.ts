@@ -21,13 +21,13 @@ const uploadImage = multer({
   storage,
   fileFilter: (req, file, cb) => {
     const regx = /^(image)\/(jpeg|png|jpg)$/;
+
     if (regx.test(file.mimetype)) {
       cb(null, true);
+      return;
     }
+
     cb(null, false);
-  },
-  limits: {
-    fileSize: 5 * 1024 * 1024, // 5MB File Size
   },
 });
 
