@@ -9,23 +9,27 @@ datasource db {
 }
 
 model User {
-  id          String    @id @default(uuid())
-  firstName   String?
-  lastName    String?
-  email       String    @unique
-  password    String?
-  bio         String?
-  avatar      String?
-  cover       String?
-  resetToken  String?
-  resetExpiry DateTime?
-  isVerified  Boolean   @default(false)
-  isActivated Boolean   @default(false)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  sessions    Session[]
-  followers   Follow[]  @relation(name: "follower")
-  followings  Follow[]  @relation(name: "following")
+  id            String        @id @default(uuid())
+  firstName     String?
+  lastName      String?
+  email         String        @unique
+  password      String?
+  bio           String?
+  avatar        String?
+  cover         String?
+  resetToken    String?
+  resetExpiry   DateTime?
+  isVerified    Boolean       @default(false)
+  isActivated   Boolean       @default(false)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  sessions      Session[]
+  followers     Follow[]      @relation(name: "follower")
+  followings    Follow[]      @relation(name: "following")
+  posts         Post[]
+  comments      Comment[]
+  likedPosts    LikePost[]
+  likedComments LikeComment[]
 
   @@index([id, email])
 }
@@ -54,5 +58,64 @@ model Follow {
 }
 
 model Post {
-  id String @id @default(uuid())
+  id        String      @id @default(uuid())
+  content   String      @db.VarChar(500)
+  images    PostImage[]
+  userId    String
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comments  Comment[]
+  isPublic  Boolean     @default(false)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  likes     LikePost[]
+
+  @@index([userId])
+}
+
+model LikePost {
+  id        String   @id @default(uuid())
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([postId, userId])
+}
+
+model LikeComment {
+  id        String   @id @default(uuid())
+  commentId String
+  comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, commentId])
+}
+
+model Comment {
+  id        String        @id @default(uuid())
+  text      String        @db.VarChar(255)
+  postId    String
+  post      Post          @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  likes     LikeComment[]
+
+  @@index([postId, userId])
+}
+
+model PostImage {
+  id       String @id @default(uuid())
+  publicId String @unique
+  url      String
+  postId   String
+  post     Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([publicId])
 }
