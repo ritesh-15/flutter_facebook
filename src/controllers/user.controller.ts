@@ -6,8 +6,7 @@ import RedisHelper from "../helpers/RedisHelper";
 import CloudinaryHelper from "../helpers/CloudinaryHelper";
 import fs from "fs/promises";
 import extractPublicIdFromUrl from "../utils/getPublicIdFromUrl";
-import PrismaProvider from "../utils/prisma";
-
+import logger from "../utils/logger";
 interface ActivateInterface {
   firstName: string;
   lastName: string;
@@ -238,27 +237,75 @@ export const getUsers = async (
 
 /**
  * 
- *@route   GET api/users/:id
+ *@route   GET api/users/profile
   @desc    Get Single User Profile
   @access  Private
  * 
  */
-export const singleUser = async (
+export const profile = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
+  const { id } = req.query;
+
   try {
-    const user = await UserService.findUnique({ id: req.params.id });
+    const user = await UserService.findUnique(
+      { id: id ? String(id) : req.user?.id },
+      {
+        ...UserService.SelectOptions,
+        followers: {
+          select: {
+            following: {
+              select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                avatar: true,
+              },
+            },
+          },
+        },
+        followings: {
+          select: {
+            follower: {
+              select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                avatar: true,
+              },
+            },
+          },
+        },
+      }
+    );
 
     if (!user)
       return next(CreateHttpError.notFound("User not found with given id!"));
 
+    const isFollowedByMe = user.followers.find(
+      (e: any) => e.following.id === req.user?.id
+    )
+      ? true
+      : false;
+
+    if (id) {
+      return res.json({
+        ok: true,
+        user: {
+          ...user,
+          isFollowedByMe,
+        },
+      });
+    }
+
     return res.json({
       ok: true,
-      user,
+      user: user,
     });
   } catch (error) {
+    logger.error(error);
     return next(CreateHttpError.internalServerError());
   }
 };
@@ -379,6 +426,11 @@ export const follow = async (
     if (!userToFollow)
       return next(CreateHttpError.notFound("User not found with given id!"));
 
+    const followingUser = await UserService.findFollowing(id, req.user?.id!);
+
+    if (followingUser)
+      return next(CreateHttpError.notFound("You are already following!"));
+
     await UserService.follow(userToFollow.id, req.user?.id!);
 
     return res.json({
@@ -437,24 +489,40 @@ export const followersAndFollowings = async (
   next: NextFunction
 ) => {
   try {
-    const data = await UserService.followingsAndFollowers(req.user?.id!);
-
-    const followings = data.map((record) => {
-      if (record.follower.id == req.user?.id) {
-        return record;
+    const data = await UserService.findUnique(
+      { id: req.user?.id },
+      {
+        id: true,
+        followers: {
+          select: {
+            following: {
+              select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                avatar: true,
+              },
+            },
+          },
+        },
+        followings: {
+          select: {
+            follower: {
+              select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                avatar: true,
+              },
+            },
+          },
+        },
       }
-    });
-
-    const followers = data.map((record) => {
-      if (record.following.id == req.user?.id) {
-        return record;
-      }
-    });
+    );
 
     return res.json({
       ok: true,
-      followings,
-      followers,
+      data,
     });
   } catch (error) {
     return next(CreateHttpError.internalServerError());

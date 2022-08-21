@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import UserInterface from "../interfaces/UserInterface";
 import PrismaProvider from "../utils/prisma";
 
@@ -37,8 +38,8 @@ class UserService {
   };
 
   static findUnique = (
-    query: QueryInterface,
-    selectOptions: any = this.SelectOptions
+    query: Prisma.UserWhereUniqueInput,
+    selectOptions: Prisma.UserSelect = this.SelectOptions
   ): any => {
     return PrismaProvider.instance().user.findUnique({
       where: query,

@@ -8,10 +8,11 @@ import {
   followersAndFollowings,
   getMe,
   getUsers,
-  singleUser,
   updateAvatar,
   updateProfile,
   uploadCover,
+  profile,
+  unFollow,
 } from "../controllers/user.controller";
 import authenticate from "../middleware/authenticate";
 import { uploadAsCover, uploadAsAvatar } from "../middleware/uploadAsAvatar";
@@ -19,6 +20,7 @@ import validateRequestBody from "../middleware/validateRequestBody";
 import {
   activateSchema,
   followSchema,
+  getProfileSchema,
   unFollowSchema,
   updateProfileSchema,
 } from "../validation/user";
@@ -71,11 +73,17 @@ userRouter.post(
   [authenticate],
   checkSchema(unFollowSchema),
   validateRequestBody,
-  follow
+  unFollow
 );
 
 userRouter.get("/followers-followings", [authenticate], followersAndFollowings);
 
-userRouter.get("/:id", [authenticate], singleUser);
+userRouter.get(
+  "/profile",
+  [authenticate],
+  checkSchema(getProfileSchema),
+  validateRequestBody,
+  profile
+);
 
 export default userRouter;

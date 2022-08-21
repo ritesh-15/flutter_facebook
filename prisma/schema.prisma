@@ -52,3 +52,7 @@ model Follow {
 
   @@index([id, followerId, followingId])
 }
+
+model Post {
+  id String @id @default(uuid())
+}

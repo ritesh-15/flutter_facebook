@@ -88,3 +88,18 @@ export const unFollowSchema: Schema = {
     errorMessage: "Follower id is required!",
   },
 };
+
+export const getProfileSchema: Schema = {
+  id: {
+    in: ["query"],
+    isString: true,
+    isUUID: true,
+    notEmpty: true,
+    optional: {
+      options: {
+        nullable: false,
+      },
+    },
+    errorMessage: "User id is not valid!",
+  },
+};
