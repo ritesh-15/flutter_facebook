@@ -2,6 +2,7 @@ import { Router } from "express";
 import uploadImage from "../config/multerConfig";
 import {
   createNewPostHandler,
+  deletePostHandler,
   getAllPostsHandler,
 } from "../controllers/post.controller";
 import authenticate from "../middleware/authenticate";
@@ -15,6 +16,7 @@ postRouter
     [authenticate, uploadImage.array("images", 10), uploadAsPostImages],
     createNewPostHandler
   )
-  .get([authenticate], getAllPostsHandler);
+  .get([authenticate], getAllPostsHandler)
+  .post([authenticate], deletePostHandler);
 
 export default postRouter;

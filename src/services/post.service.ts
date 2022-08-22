@@ -21,6 +21,20 @@ class PostService {
       select,
     });
   }
+
+  deletePostById(id: string) {
+    return PrismaProvider.instance().post.delete({
+      where: { id },
+    });
+  }
+
+  findById(id: string) {
+    return PrismaProvider.instance().post.findUnique({
+      where: {
+        id,
+      },
+    });
+  }
 }
 
 export default new PostService();

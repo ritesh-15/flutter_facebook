@@ -116,3 +116,31 @@ export const getAllPostsHandler = async (
     next(CreateHttpError.internalServerError());
   }
 };
+
+/**
+ * @route DELETE api/posts
+ * @desc Delete the post by id
+ * @access Private
+ */
+export const deletePostHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const post = await postService.findById(req.params.id);
+
+    if (!post) {
+      return next(CreateHttpError.notFound("Post with given id is not found!"));
+    }
+
+    await postService.deletePostById(post.id);
+
+    return res.json({
+      ok: true,
+      message: "Post deleted successfully!",
+    });
+  } catch (error) {
+    next(CreateHttpError.internalServerError());
+  }
+};
